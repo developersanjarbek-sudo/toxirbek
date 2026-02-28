@@ -11,6 +11,7 @@ import { collection, addDoc, onSnapshot, query, orderBy, doc, getDoc, setDoc, up
 import { db } from './firebase';
 import Login from './components/Login';
 import AdminPanel from './components/AdminPanel';
+import LoadingScreen from './components/LoadingScreen';
 
 // --- Interfaces ---
 
@@ -126,58 +127,6 @@ const DEFAULT_CONTENT: SiteContent = {
     noProjectsDesc: "Tez orada yangi ishlar qo'shiladi."
   }
 };
-
-const DEFAULT_SERVICES: Service[] = [
-  { id: '1', title: "Reels Ishlab Chiqarish", desc: "Trenddagi musiqalar va dinamik montaj orqali virusli videolar.", price: "Boshlang'ich $200", icon: 'video' },
-  { id: '2', title: "Tijorat Reklamalari", desc: "Brendingizni yangi bosqichga olib chiquvchi professional roliklar.", price: "Boshlang'ich $500", icon: 'monitor' },
-  { id: '3', title: "Mahsulot Videografiyasi", desc: "Mahsulotingizning har bir detalini ochib beruvchi estetik kadrlar.", price: "Boshlang'ich $300", icon: 'camera' },
-  { id: '4', title: "Tadbirlarni Yoritish", desc: "Muhim onlarni kinematik uslubda abadiylashtirish.", price: "Boshlang'ich $400", icon: 'camera' }
-];
-
-const DEFAULT_TESTIMONIALS: Testimonial[] = [
-  { id: '1', name: "Aziz Rahimov", role: "Marketing Direktor, BrandX", text: "Tohirjon bilan ishlash juda oson. U bizning brendimizni bir qarashda tushundi va kutganimizdan ham a'lo natija berdi." },
-  { id: '2', name: "Malika Karimova", role: "Tadbirkor", text: "Reelslarimiz ko'rishlar soni 3 barobar oshdi. Kreativ yondashuv va tezkorlik uchun rahmat!" }
-];
-
-const DEFAULT_FAQ: FAQItem[] = [
-  { id: '1', q: "Videoni qancha vaqtda tayyorlab berasiz?", a: "Loyiha murakkabligiga qarab 2-5 kun ichida." },
-  { id: '2', q: "Qanday uskunalar ishlatasiz?", a: "iPhone 16 Pro Max, Sony FX3, DJI Ronin stabilizatorlari va professional yoritgichlar." },
-  { id: '3', q: "Faqat Toshkentda ishlaysizmi?", a: "Asosan Toshkentda, lekin kelishuv asosida viloyatlarga ham chiqishim mumkin." }
-];
-
-const DEFAULT_PROCESS: ProcessStep[] = [
-  { id: '1', step: "01", title: "Brifing", desc: "G'oyalarni muhokama qilish va strategiya tuzish." },
-  { id: '2', step: "02", title: "Siyomka", desc: "Professional uskunalar yordamida tasvirga olish." },
-  { id: '3', step: "03", title: "Montaj", desc: "Ranglar, ovoz va effektlar bilan ishlash." },
-  { id: '4', step: "04", title: "Natija", desc: "Tayyor videoni formatlarga moslab topshirish." }
-];
-
-const DEFAULT_EQUIPMENT: EquipmentItem[] = [
-  {
-    id: '1',
-    icon: 'camera',
-    title: "Kamera Tizimi",
-    items: ["iPhone 16 Pro Max (ProRes Log)", "Sony FX3 Cinema Line", "Sony A7S III"]
-  },
-  {
-    id: '2',
-    icon: 'zap',
-    title: "Yoritish & Stabilizatsiya",
-    items: ["DJI Ronin RS3 Pro", "Aputure 300d II", "Nanlite PavoTube II X"]
-  },
-  {
-    id: '3',
-    icon: 'aperture',
-    title: "Optika & Ovoz",
-    items: ["Sony G Master 24-70mm f/2.8", "Sennheiser MKH 416", "DJI Mic 2"]
-  },
-  {
-    id: '4',
-    icon: 'monitor',
-    title: "Post-Production",
-    items: ["MacBook Pro M3 Max", "DaVinci Resolve Studio", "Adobe After Effects"]
-  }
-];
 
 const CATEGORIES = ["Tijorat", "Reels", "Tadbir", "Mahsulot"];
 
@@ -562,14 +511,15 @@ function Home() {
   const [darkMode, setDarkMode] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   
   // Dynamic Content State
   const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
-  const [services, setServices] = useState<Service[]>(DEFAULT_SERVICES);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>(DEFAULT_TESTIMONIALS);
-  const [faq, setFaq] = useState<FAQItem[]>(DEFAULT_FAQ);
-  const [process, setProcess] = useState<ProcessStep[]>(DEFAULT_PROCESS);
-  const [equipment, setEquipment] = useState<EquipmentItem[]>(DEFAULT_EQUIPMENT);
+  const [services, setServices] = useState<Service[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [faq, setFaq] = useState<FAQItem[]>([]);
+  const [process, setProcess] = useState<ProcessStep[]>([]);
+  const [equipment, setEquipment] = useState<EquipmentItem[]>([]);
 
   const toggleTheme = () => setDarkMode(!darkMode);
 
@@ -583,6 +533,8 @@ function Home() {
 
   // Fetch Data
   useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2000);
+
     // Projects
     const qProjects = query(collection(db, "projects"));
     const unsubscribeProjects = onSnapshot(qProjects, (snapshot) => {
@@ -599,44 +551,35 @@ function Home() {
     // Services
     const qServices = query(collection(db, "services"));
     const unsubscribeServices = onSnapshot(qServices, (snapshot) => {
-      if (!snapshot.empty) {
-        setServices(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service)));
-      }
+      setServices(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service)));
     });
 
     // Testimonials
     const qTestimonials = query(collection(db, "testimonials"));
     const unsubscribeTestimonials = onSnapshot(qTestimonials, (snapshot) => {
-      if (!snapshot.empty) {
-        setTestimonials(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Testimonial)));
-      }
+      setTestimonials(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Testimonial)));
     });
 
     // FAQ
     const qFaq = query(collection(db, "faq"));
     const unsubscribeFaq = onSnapshot(qFaq, (snapshot) => {
-      if (!snapshot.empty) {
-        setFaq(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FAQItem)));
-      }
+      setFaq(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FAQItem)));
     });
 
     // Process
     const qProcess = query(collection(db, "process"), orderBy("step"));
     const unsubscribeProcess = onSnapshot(qProcess, (snapshot) => {
-      if (!snapshot.empty) {
-        setProcess(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ProcessStep)));
-      }
+      setProcess(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ProcessStep)));
     });
 
     // Equipment
     const qEquipment = query(collection(db, "equipment"));
     const unsubscribeEquipment = onSnapshot(qEquipment, (snapshot) => {
-      if (!snapshot.empty) {
-        setEquipment(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as EquipmentItem)));
-      }
+      setEquipment(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as EquipmentItem)));
     });
 
     return () => {
+      clearTimeout(timer);
       unsubscribeProjects();
       unsubscribeContent();
       unsubscribeServices();
@@ -693,6 +636,9 @@ function Home() {
 
   return (
     <div ref={containerRef} className={`${darkMode ? 'bg-black text-white selection:bg-white selection:text-black' : 'bg-white text-zinc-900 selection:bg-black selection:text-white'} min-h-screen font-sans transition-colors duration-300 overflow-x-hidden`}>
+      <AnimatePresence>
+        {loading && <LoadingScreen />}
+      </AnimatePresence>
       <Cursor />
       <div className="bg-noise" />
       <ScrollToTop />

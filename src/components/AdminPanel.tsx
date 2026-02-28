@@ -337,6 +337,7 @@ export default function AdminPanel() {
           heroSubtitle: "Brendlar va shaxslar uchun premium mobil kontent yaratuvchi videograf.",
           heroImage: "",
           aboutText: "Men shunchaki video olmayman...",
+          aboutImage: "",
           aboutStats: [
             { val: "3+", label: "Yillik Tajriba" },
             { val: "100+", label: "Muvaffaqiyatli Loyiha" },
@@ -344,7 +345,28 @@ export default function AdminPanel() {
             { val: "24/7", label: "Kreativ Yondashuv" }
           ],
           socialLinks: { instagram: "", telegram: "", phone: "" },
-          clients: ["Samsung", "Pepsi", "Click", "Payme", "Uzum", "Korzinka", "Murad Buildings", "Golden House"]
+          clients: ["Samsung", "Pepsi", "Click", "Payme", "Uzum", "Korzinka", "Murad Buildings", "Golden House"],
+          sectionTitles: {
+            about: "Haqida",
+            portfolio: "Ishlar",
+            services: "Xizmatlar",
+            process: "Ish Jarayoni",
+            testimonials: "Mijozlar Fikri",
+            faq: "Ko'p So'raladigan Savollar",
+            contact: "Bog'lanish",
+            equipment: "Ishlatiladigan Texnika"
+          },
+          uiTexts: {
+            orderBtn: "Buyurtma Berish",
+            viewWorksBtn: "Ishlarimni Ko'rish",
+            contactBtn: "Bog'lanish",
+            sendBtn: "Yuborish",
+            footerText: "© 2026 Tohirjon Boltayev. Barcha huquqlar himoyalangan.",
+            contactTitle: "LOYIHANGIZNI\nMUHOKAMA\nQILAMIZMI?",
+            contactSubtitle: "Quyidagi havolalar orqali menga yozing yoki qo'ng'iroq qiling. 24 soat ichida javob beraman.",
+            noProjectsTitle: "Hozircha bu kategoriyada loyihalar yo'q.",
+            noProjectsDesc: "Tez orada yangi ishlar qo'shiladi."
+          }
         });
       }
     });
